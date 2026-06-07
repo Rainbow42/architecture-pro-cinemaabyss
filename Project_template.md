@@ -6,6 +6,7 @@
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
 [контейнерная диаграмма (PlantUML)](docs/architecture/c4-container.puml)
+
 [!image](docs/architecture/c4-container.svg)
 
 ## Задание 2
@@ -57,7 +58,11 @@
     - Добавьте в docker-compose новый сервис, kafka там уже есть
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
-Скриншоты: [postman-local.png](docs/screenshots/postman-local.png), [kafka-ui.png](docs/screenshots/kafka-ui.png)
+Скриншоты:
+
+![postman-local](docs/screenshots/postman-local.png)
+
+![kafka-ui](docs/screenshots/kafka-ui.png)
 
 
 ## Задание 3
@@ -272,7 +277,11 @@ cat .docker/config.json | base64
   Откройте логи event-service и сделайте скриншот обработки событий
 
 #### Шаг 3
-Скриншоты: [api-movies-ingress.png](docs/screenshots/api-movies-ingress.png), [events-service-logs.png](docs/screenshots/events-service-logs.png)
+Скриншоты:
+
+![api-movies-ingress](docs/screenshots/api-movies-ingress.png)
+
+![events-service-logs](docs/screenshots/events-service-logs.png)
 
 
 ## Задание 4
@@ -347,7 +356,11 @@ minikube tunnel
 
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
-Скриншоты: [helm-pods.png](docs/screenshots/helm-pods.png), [helm-api-movies.png](docs/screenshots/helm-api-movies.png)
+Скриншоты:
+
+![helm-pods](docs/screenshots/helm-pods.png)
+
+![helm-api-movies](docs/screenshots/helm-api-movies.png)
 
 
 # Задание 5
@@ -413,7 +426,9 @@ cluster.outbound|8081||movies-service.cinemaabyss.svc.cluster.local;.upstream_rq
 You can see 21 for the upstream_rq_pending_overflow value which means 21 calls so far have been flagged for circuit breaking.
 ```
 
-Скриншот: [circuit-breaker-fortio.png](docs/screenshots/circuit-breaker-fortio.png)
+Скриншот:
+
+![circuit-breaker-fortio](docs/screenshots/circuit-breaker-fortio.png)
 
 Удаляем все
 ```bash
