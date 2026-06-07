@@ -7,7 +7,7 @@
 Добавьте ссылку на файл в этот шаблон
 [контейнерная диаграмма (PlantUML)](docs/architecture/c4-container.puml)
 
-[!image](docs/architecture/c4-container.svg)
+![контейнерная диаграмма C4](docs/architecture/c4-container.svg)
 
 ## Задание 2
 
