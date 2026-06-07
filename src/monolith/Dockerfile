@@ -11,8 +11,10 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o monolith .
+# Build the application (TARGETOS/TARGETARCH set by buildx for multi-arch)
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o monolith .
 
 # Use a smaller image for the final application
 FROM alpine:latest  
