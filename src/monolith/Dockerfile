@@ -2,24 +2,15 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
-
-# Download all dependencies
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code
 COPY . .
+RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o monolith .
 
-# Build the application (TARGETOS/TARGETARCH set by buildx for multi-arch)
-ARG TARGETOS
-ARG TARGETARCH
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o monolith .
+FROM alpine:latest
 
-# Use a smaller image for the final application
-FROM alpine:latest  
-
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates wget
 
 WORKDIR /root/
 

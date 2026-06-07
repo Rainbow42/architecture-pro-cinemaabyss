@@ -30,42 +30,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start services with Docker Compose
+        run: bash scripts/ci-compose-up.sh
+        timeout-minutes: 20
+
+      - name: Show service logs on failure
+        if: failure()
         run: |
-          docker compose up -d
-
-          wait_for() {
-            local url=$1
-            local name=$2
-            for i in $(seq 1 36); do
-              if curl -sf "$url" > /dev/null; then
-                echo "$name is ready"
-                return 0
-              fi
-              echo "Waiting for $name... ($i/36)"
-              sleep 5
-            done
-            echo "$name failed to start"
-            return 1
-          }
-
-          echo "Waiting for services to be ready..."
-          wait_for http://localhost:8080/health monolith
-          wait_for http://localhost:8081/api/movies/health movies-service
-          wait_for http://localhost:8082/api/events/health events-service
-          wait_for http://localhost:8000/health proxy-service
-          echo "Waiting for Kafka..."
-          sleep 30
+          docker compose ps -a
+          docker compose logs monolith movies-service events-service proxy-service postgres kafka --tail=100
 
       - name: Run API tests in Docker network
         working-directory: tests/postman
-        run: |
-          docker build -t cinemaabyss-api-tests .
-          docker run --rm \
-            --network=cinemaabyss-network \
-            -v "$(pwd)/reports:/app/reports" \
-            cinemaabyss-api-tests \
-            --environment docker \
-            --reporters cli,junit
+        run: npm run test:docker
 
       - name: Stop services
         if: always()

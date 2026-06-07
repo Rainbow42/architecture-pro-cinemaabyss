@@ -6,14 +6,11 @@ COPY go.mod ./
 RUN go mod download
 
 COPY . .
-
-ARG TARGETOS
-ARG TARGETARCH
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o proxy-service .
+RUN CGO_ENABLED=0 go build -o proxy-service .
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates wget
 
 WORKDIR /root/
 COPY --from=builder /app/proxy-service .
