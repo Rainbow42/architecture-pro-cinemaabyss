@@ -15,4 +15,4 @@ COPY . .
 ENTRYPOINT ["node", "run-tests.js"]
 
 # Default arguments - can be overridden at runtime
-CMD ["--environment", "docker"]
+CMD ["--environment", "docker", "--reporters", "cli,junit"]

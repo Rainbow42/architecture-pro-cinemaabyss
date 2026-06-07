@@ -1,0 +1,72 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main, master, feature/project-template-tasks ]
+  pull_request:
+    branches: [ main, master, feature/project-template-tasks ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        default: 'docker'
+        type: choice
+        options:
+          - local
+          - docker
+      test_folder:
+        description: 'Test folder to run (leave empty for all)'
+        required: false
+        type: string
+
+jobs:
+  api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start services with Docker Compose
+        run: |
+          docker compose up -d
+
+          wait_for() {
+            local url=$1
+            local name=$2
+            for i in $(seq 1 36); do
+              if curl -sf "$url" > /dev/null; then
+                echo "$name is ready"
+                return 0
+              fi
+              echo "Waiting for $name... ($i/36)"
+              sleep 5
+            done
+            echo "$name failed to start"
+            return 1
+          }
+
+          echo "Waiting for services to be ready..."
+          wait_for http://localhost:8080/health monolith
+          wait_for http://localhost:8081/api/movies/health movies-service
+          wait_for http://localhost:8082/api/events/health events-service
+          wait_for http://localhost:8000/health proxy-service
+          echo "Waiting for Kafka..."
+          sleep 30
+
+      - name: Run API tests in Docker network
+        working-directory: tests/postman
+        run: |
+          docker build -t cinemaabyss-api-tests .
+          docker run --rm \
+            --network=cinemaabyss-network \
+            -v "$(pwd)/reports:/app/reports" \
+            cinemaabyss-api-tests \
+            --environment docker \
+            --reporters cli,junit
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v
