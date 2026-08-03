@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node run-tests.js",
     "test:local": "node run-tests.js --environment local",
-    "test:docker": "node run-tests.js --environment docker",
+    "test:docker": "bash run-docker-tests.sh",
     "test:kubernetes": "node run-tests.js --environment kubernetes"
   },
   "keywords": [

@@ -192,4 +192,6 @@ The chart mounts a Persistent Volume for PostgreSQL, Kafka, and Zookeeper. The v
 
 ## Image Pull Secrets
 
-The chart includes a secret for pulling images from private registries. The secret is created using the value provided in `imagePullSecrets.dockerconfigjson`.
+Образы приложения публикуются в GHCR как **public** packages — секрет `dockerconfigjson` в Helm-чарте не нужен.
+
+После сборки в GitHub Actions откройте каждый package (monolith, movies-service, events-service, proxy-service) → **Package settings** → **Change visibility** → **Public**.

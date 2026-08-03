@@ -1,0 +1,25 @@
+@startuml c4-container-cinemaabyss
+!include <C4/C4_Container>
+
+title Контейнерная диаграмма КиноБездна
+
+Person(user, "Пользователь", "Смотрит каталог, оформляет подписку и платежи")
+
+System_Boundary(cinemaabyss, "КиноБездна") {
+    Container(proxy, "API Gateway", "Go", "Единая точка входа, Strangler Fig для фильмов")
+    Container(monolith, "Монолит", "Go", "Пользователи, платежи, подписки, фильмы (пока миграция)")
+    Container(movies, "Movies Service", "Go", "Метаданные фильмов, жанры, рейтинги")
+    Container(events, "Events Service", "Go", "Публикация и обработка событий")
+    ContainerDb(postgres, "PostgreSQL", "PostgreSQL", "Общая БД для монолита и movies")
+    ContainerQueue(kafka, "Kafka", "Apache Kafka", "Топики movie/user/payment-events")
+}
+
+Rel(user, proxy, "HTTPS / REST", "JSON")
+Rel(proxy, monolith, "Проксирует /api/users, payments, subscriptions, часть movies")
+Rel(proxy, movies, "Проксирует /api/movies по фиче-флагу MOVIES_MIGRATION_PERCENT")
+Rel(proxy, events, "Проксирует /api/events")
+Rel(monolith, postgres, "SQL")
+Rel(movies, postgres, "SQL")
+Rel(events, kafka, "produce / consume")
+
+@enduml
